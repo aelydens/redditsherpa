@@ -1,5 +1,6 @@
 require 'thor'
 require 'redditsherpa/client'
+require 'pry'
 
 module Redditsherpa
   class CLI < Thor
@@ -16,19 +17,19 @@ module Redditsherpa
     def read( subreddit )
       puts "reading subreddit..."
       response = client.get_posts( subreddit )
-      posts = response["data"]["children"]
+      posts = response[:data][:children]
 
       i = 1
       array = []
       posts.take(25).each do |post|
-        post = post["data"]
-        post_id = post["id"]
+        post = post[:data]
+        post_id = post[:id]
         array << post_id
-        puts "#{i}. " + post["title"]
+        puts "#{i}. " + post[:title]
         puts "http://www.reddit.com/r/#{subr}/comments/#{post_id}/.json"
         puts "#{post["url"]}"
         puts "____________________________________________________________"
-        puts "Upvotes: #{post['ups']} | Downvotes: #{post['downs']} | Number of Comments #{post["num_comments"]}"
+        puts "Upvotes: #{post[:ups]} | Downvotes: #{post[:downs]} | Number of Comments #{post[:num_comments]}"
         puts ""
         i += 1
       end
