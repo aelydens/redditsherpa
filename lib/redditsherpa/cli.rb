@@ -5,9 +5,7 @@ require 'launchy'
 module Redditsherpa
   class CLI < Thor
     include Launchy
-    # prompt_for_input(true) # welcome to Annie's app, here are your input options:
-    #
-    # # Run loop (infinite)
+
     # loop do
     #   input = gets.chomp
     #
@@ -53,30 +51,36 @@ module Redditsherpa
         puts ""
         i += 1
       end
-      puts "To open a page, please enter a topic number"
+      puts "To open a page, please enter a topic number after 'open'. Example: open 12"
+      puts "To open the comments for a specific topic in terminal, enter 'comments TOPICNUMBER'. Example: comments 12"
       input = STDIN.gets.chomp!
-      target_url = @array[input.to_i]
-      puts "Opening #{target_url}..."
-      Launchy.open(target_url)
+      if input.include?("open")
+        input.gsub("open ","")
+        target_url = @array[input.to_i]
+        puts "Opening #{target_url}..."
+        Launchy.open(target_url)
+      else
+        input.include?("comments")
+          input.gsub("comments ","")
+          target_url = @array[input.to_i]
+
+          response = Faraday.get target_url
+          json_response = JSON.parse(response.body)
+
+          thread = json_response[0]["data"]["children"][0]
+          puts "______________________________________________________________"
+          puts "Title: #{thread["data"]["title"]}"
+          puts "Author: #{thread["data"]["author"]}"
+          puts "Number of Comments: #{thread["data"]["num_comments"]}"
+          puts "to open in reddit, use flag --open"
+          puts "______________________________________________________________"
+
+          recursive_child_output(json_response[1]["data"]["children"])
+        end
+      end
+        puts "Your command was not recognized."
       # puts "To see comments for a particular topic, run comments TOPICNUMBER.\nEx. To see all comments for topic 12, run 'comments 12'\n\n"
       # prompt_for_next_input # puts "To exit use CTRL + C, otherwise type --help to see which commands you can run"
-    end
-
-    desc "comments TOPICNUMBER", "Get the comments for a specific topic thread"
-    def comments(topicnumber)
-      target_url = @array[topicnumber.to_i - 1]
-      response = Faraday.get target_url
-      json_response = JSON.parse(response.body)
-
-      thread = json_response[0]["data"]["children"][0]
-      puts "______________________________________________________________"
-      puts "Title: #{thread["data"]["title"]}"
-      puts "Author: #{thread["data"]["author"]}"
-      puts "Number of Comments: #{thread["data"]["num_comments"]}"
-      puts "to open in reddit, use flag --open"
-      puts "______________________________________________________________"
-
-      recursive_child_output(json_response[1]["data"]["children"])
     end
 
     private
