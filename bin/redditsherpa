@@ -1,7 +1,4 @@
 #!/usr/bin/env ruby -wU
-
 require 'redditsherpa'
-
-puts "Doing stuff..."
 
 Redditsherpa::CLI.start( ARGV )
