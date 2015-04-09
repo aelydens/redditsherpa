@@ -2,6 +2,7 @@ require 'thor'
 require 'redditsherpa/client'
 require 'launchy'
 require 'rainbow/ext/string'
+require 'pry'
 
 module Redditsherpa
   class CLI < Thor
@@ -53,9 +54,7 @@ module Redditsherpa
       else
         input.include?("c")
         input = input.gsub("c ","")
-        puts input
-        puts @array[input.to_i]+".json"
-        comments_url = @array[input.to_i] +".json"
+        comments_url = @array[input.to_i - 1] +".json"
 
         response2 = Faraday.get comments_url
         json_response2 = JSON.parse(response2.body)
@@ -69,7 +68,10 @@ module Redditsherpa
         puts "Number of Comments: #{thread["data"]["num_comments"]}"
         puts "______________________________________________________________"
 
-        recursive_child_output(json_response2[1]["data"]["children"])
+        top_level_comments = json_response2[1]["data"]["children"]
+        top_level_comments.each do |comment|
+          print_subcomments_recursively(comment)
+        end
       end
     end
 
@@ -79,19 +81,14 @@ module Redditsherpa
       @client ||= Redditsherpa::Client.new
     end
 
-    def recursive_child_output(children, depth=0)
-      children.each do |child|
-        if child["data"]["replies"] == ""
-          puts "--END THREAD--"
-        else
-          child["data"]["replies"]["data"]["children"].each do |child|
-            puts
-            puts "\t"*depth + "Level #{depth}: #{child["data"]["body"]} -- by #{child["data"]["author"]}"
-
-            unless child["data"] == nil || child["data"]["replies"]["data"] == nil
-              recursive_child_output(child["data"]["replies"]["data"]["children"], depth + 1)
-            end
-          end
+    def print_subcomments_recursively(comment, depth=0)
+      puts "\t"*depth + "Level #{depth}: #{comment["data"]["body"]} -- by #{comment["data"]["author"]}"
+      if comment["data"]["replies"] == "" or !comment["data"].has_key?("replies")
+        puts "--END THREAD--"
+      else
+        sub_comments = comment["data"]["replies"]["data"]["children"]
+        sub_comments.each do |comment|
+          print_subcomments_recursively(comment, depth + 1)
         end
       end
     end
