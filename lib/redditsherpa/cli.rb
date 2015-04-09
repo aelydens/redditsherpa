@@ -1,11 +1,10 @@
 require 'thor'
 require 'redditsherpa/client'
-require 'pry'
-
+require 'launchy'
 
 module Redditsherpa
   class CLI < Thor
-
+    include Launchy
     # prompt_for_input(true) # welcome to Annie's app, here are your input options:
     #
     # # Run loop (infinite)
@@ -29,10 +28,10 @@ module Redditsherpa
       result = response[:data][:children]
       result.each_with_index do |hash, i|
         unless i == 0
-        puts hash[:data][:title]
-        puts hash[:data][:description]
-        puts "_____________________________________________"
-      end
+          puts hash[:data][:title]
+          puts hash[:data][:description]
+          puts "_____________________________________________"
+        end
       end
     end
 
@@ -46,7 +45,7 @@ module Redditsherpa
       posts.take(25).each do |post|
         post = post[:data]
         post_id = post[:id]
-        @array << "http://www.reddit.com/r/#{subreddit}/comments/#{post_id}/.json"
+        @array << "http://www.reddit.com/r/#{subreddit}/comments/#{post_id}/"
         puts "#{i}. " + post[:title]
         puts "#{post[:url]}"
         puts "____________________________________________________________"
@@ -54,8 +53,13 @@ module Redditsherpa
         puts ""
         i += 1
       end
-      puts "To see comments for a particular topic, run comments TOPICNUMBER.\nEx. To see all comments for topic 12, run 'comments 12'\n\n"
-      prompt_for_next_input # puts "To exit use CTRL + C, otherwise type --help to see which commands you can run"
+      puts "To open a page, please enter a topic number"
+      input = STDIN.gets.chomp!
+      target_url = @array[input.to_i]
+      puts "Opening #{target_url}..."
+      Launchy.open(target_url)
+      # puts "To see comments for a particular topic, run comments TOPICNUMBER.\nEx. To see all comments for topic 12, run 'comments 12'\n\n"
+      # prompt_for_next_input # puts "To exit use CTRL + C, otherwise type --help to see which commands you can run"
     end
 
     desc "comments TOPICNUMBER", "Get the comments for a specific topic thread"
