@@ -1,23 +1,21 @@
 require 'thor'
 require 'redditsherpa/client'
 require 'launchy'
-require 'pry'
-require 'rainbow'
+require 'rainbow/ext/string'
 
 module Redditsherpa
   class CLI < Thor
     include Launchy
-    include Rainbow
 
     desc "search TOPIC", "Search for content on reddit by passing in a topic"
     def search(topic)
       response = client.search(topic)
       result = response[:data][:children]
       puts "***********************************"
-      puts Rainbow("Search Results:").magenta.underline.bright
+      puts ("Search Results:").color(:magenta).underline.bright
       result.each_with_index do |hash, i|
         unless i == 0
-          puts Rainbow(hash[:data][:title]).green
+          puts Rainbow(hash[:data][:title]).bright
           puts (hash[:data][:description])
           puts "_____________________________________________"
         end
@@ -35,10 +33,10 @@ module Redditsherpa
         post = post[:data]
         post_id = post[:id]
         @array << "http://www.reddit.com/r/#{subreddit}/comments/#{post_id}/"
-        puts Rainbow("#{i}. " + post[:title]).bright
+        puts ("#{i}. " + post[:title]).bright
         puts "#{post[:url]}"
         puts "____________________________________________________________"
-        puts Rainbow("Upvotes: #{post[:ups]}").green + "|" + Rainbow("Downvotes: #{post[:downs]}").red + "| Number of Comments #{post[:num_comments]}"
+        puts ("Upvotes: #{post[:ups]}").color(:green) + "|" + Rainbow("Downvotes: #{post[:downs]}").color(:red) + "| Number of Comments #{post[:num_comments]}"
         puts
         i += 1
       end
@@ -49,7 +47,7 @@ module Redditsherpa
       input = STDIN.gets.chomp!
       if input.include?("open")
         input = input.gsub("open ","")
-        target_url = @array[input.to_i]
+        target_url = @array[input.to_i - 1]
         puts "Opening #{target_url}..."
         Launchy.open(target_url)
       else
