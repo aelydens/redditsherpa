@@ -1,27 +1,19 @@
 # Redditsherpa
 
-TODO: Write a gem description
+Read reddit from the command line.
 
 ## Installation
 
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'redditsherpa'
-```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
+This tool is currently available only in the command line. To install, run:
 
     $ gem install redditsherpa
 
 ## Usage
 
-TODO: Write usage instructions here
+For full help, run
 
+    $ redditsherpa help
+ 
 ## Contributing
 
 1. Fork it ( https://github.com/[my-github-username]/redditsherpa/fork )
