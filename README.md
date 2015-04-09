@@ -1,6 +1,6 @@
 # Redditsherpa
 
-TODO: Write a gem description
+Read reddit from the command line.
 
 ## Installation
 
