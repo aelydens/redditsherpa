@@ -83,8 +83,8 @@ module Redditsherpa
         puts "-------------------------END THREAD-------------------------\n"
       else
         sub_comments = comment["data"]["replies"]["data"]["children"]
-        sub_comments.each do |comment|
-          print_subcomments_recursively(comment, depth + 1)
+        sub_comments.each do |subcomment|
+          print_subcomments_recursively(subcomment, depth + 1)
         end
       end
     end
