@@ -1,11 +1,26 @@
 require 'thor'
 require 'redditsherpa/client'
 require 'launchy'
-require 'pry'
 
 module Redditsherpa
   class CLI < Thor
     include Launchy
+    # prompt_for_input(true) # welcome to Annie's app, here are your input options:
+    #
+    # # Run loop (infinite)
+    # loop do
+    #   input = gets.chomp
+    #
+    #   if input == 'comments'
+    #     search(input)
+    #   elsif input == '--exit'
+    #     System.exit
+    #   end
+    #   # code here that handles that user input, calling the methods you've defined
+    #
+    #   prompt_for_input
+    #   # re-prompt giving them options for what to do next
+    # end
 
     desc "search TOPIC", "Search for content on reddit by passing in a topic"
     def search(topic)
@@ -38,36 +53,30 @@ module Redditsherpa
         puts ""
         i += 1
       end
-      puts "To open a page, please enter a topic number after 'open'. Example: open 12"
-      puts "To open the comments for a specific topic in terminal, enter 'c' and then the topic number. Example: c 12"
-
+      puts "To open a page, please enter a topic number"
       input = STDIN.gets.chomp!
-      if input.include?("open")
-        input = input.gsub("open ","")
-        target_url = @array[input.to_i]
-        puts "Opening #{target_url}..."
-        Launchy.open(target_url)
-      else
-        input.include?("c")
-        input = input.gsub("c ","")
-        puts input
-        puts @array[input.to_i]+".json"
-        comments_url = @array[input.to_i] +".json"
+      target_url = @array[input.to_i]
+      puts "Opening #{target_url}..."
+      Launchy.open(target_url)
+      # puts "To see comments for a particular topic, run comments TOPICNUMBER.\nEx. To see all comments for topic 12, run 'comments 12'\n\n"
+      # prompt_for_next_input # puts "To exit use CTRL + C, otherwise type --help to see which commands you can run"
+    end
 
-        response2 = Faraday.get comments_url
-        json_response2 = JSON.parse(response2.body)
+    desc "comments TOPICNUMBER", "Get the comments for a specific topic thread"
+    def comments(topicnumber)
+      target_url = @array[topicnumber.to_i - 1]
+      response = Faraday.get target_url
+      json_response = JSON.parse(response.body)
 
-        thread = json_response2[0]["data"]["children"][0]
-        puts
-        puts
-        puts "______________________________________________________________"
-        puts "Title: #{thread["data"]["title"]}"
-        puts "Author: #{thread["data"]["author"]}"
-        puts "Number of Comments: #{thread["data"]["num_comments"]}"
-        puts "______________________________________________________________"
+      thread = json_response[0]["data"]["children"][0]
+      puts "______________________________________________________________"
+      puts "Title: #{thread["data"]["title"]}"
+      puts "Author: #{thread["data"]["author"]}"
+      puts "Number of Comments: #{thread["data"]["num_comments"]}"
+      puts "to open in reddit, use flag --open"
+      puts "______________________________________________________________"
 
-        recursive_child_output(json_response2[1]["data"]["children"])
-      end
+      recursive_child_output(json_response[1]["data"]["children"])
     end
 
     private
@@ -92,5 +101,11 @@ module Redditsherpa
         end
       end
     end
+
   end
 end
+
+# while true do
+#   # app code goes in here
+#   # System.exit
+# end
