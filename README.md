@@ -4,23 +4,15 @@ TODO: Write a gem description
 
 ## Installation
 
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'redditsherpa'
-```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
+Currently this tool is command line only. To install, run:
 
     $ gem install redditsherpa
 
 ## Usage
 
-TODO: Write usage instructions here
+For help, run:
+
+    $ redditsherpa help
 
 ## Contributing
 
