@@ -8,7 +8,7 @@ module Redditsherpa
       @conn = Faraday.new(:url => 'http://www.reddit.com/')
     end
 
-    def search( query )
+    def search(query)
       params = { 'q' => query }
       response = @conn.get "subreddits/search/.json", params
       JSON.parse(response.body, symbolize_names: true)
