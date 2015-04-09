@@ -1,6 +1,7 @@
 require 'thor'
 require 'redditsherpa/client'
 require 'launchy'
+require 'pry'
 
 module Redditsherpa
   class CLI < Thor
@@ -52,33 +53,35 @@ module Redditsherpa
         i += 1
       end
       puts "To open a page, please enter a topic number after 'open'. Example: open 12"
-      puts "To open the comments for a specific topic in terminal, enter 'comments TOPICNUMBER'. Example: comments 12"
+      puts "To open the comments for a specific topic in terminal, enter 'c' and then the topic number. Example: c 12"
+
       input = STDIN.gets.chomp!
       if input.include?("open")
-        input.gsub("open ","")
+        input = input.gsub("open ","")
         target_url = @array[input.to_i]
         puts "Opening #{target_url}..."
         Launchy.open(target_url)
       else
-        input.include?("comments")
-          input.gsub("comments ","")
-          target_url = @array[input.to_i]
+        input.include?("c")
+        input = input.gsub("c ","")
+        puts input
+        puts @array[input.to_i]+".json"
+        comments_url = @array[input.to_i] +".json"
 
-          response = Faraday.get target_url
-          json_response = JSON.parse(response.body)
+        response2 = Faraday.get comments_url
+        json_response2 = JSON.parse(response2.body)
 
-          thread = json_response[0]["data"]["children"][0]
-          puts "______________________________________________________________"
-          puts "Title: #{thread["data"]["title"]}"
-          puts "Author: #{thread["data"]["author"]}"
-          puts "Number of Comments: #{thread["data"]["num_comments"]}"
-          puts "to open in reddit, use flag --open"
-          puts "______________________________________________________________"
+        thread = json_response2[0]["data"]["children"][0]
+        puts
+        puts
+        puts "______________________________________________________________"
+        puts "Title: #{thread["data"]["title"]}"
+        puts "Author: #{thread["data"]["author"]}"
+        puts "Number of Comments: #{thread["data"]["num_comments"]}"
+        puts "______________________________________________________________"
 
-          recursive_child_output(json_response[1]["data"]["children"])
-        end
+        recursive_child_output(json_response2[1]["data"]["children"])
       end
-        puts "Your command was not recognized."
       # puts "To see comments for a particular topic, run comments TOPICNUMBER.\nEx. To see all comments for topic 12, run 'comments 12'\n\n"
       # prompt_for_next_input # puts "To exit use CTRL + C, otherwise type --help to see which commands you can run"
     end
