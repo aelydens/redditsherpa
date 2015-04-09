@@ -61,9 +61,10 @@ module Redditsherpa
 
         thread = json_response2[0]["data"]["children"][0]
         puts
+        puts "***************************COMMENTS***************************"
         puts
         puts "______________________________________________________________"
-        puts "Title: #{thread["data"]["title"]}"
+        puts Rainbow("Title: #{thread["data"]["title"]}").magenta.bright
         puts "Author: #{thread["data"]["author"]}"
         puts "Number of Comments: #{thread["data"]["num_comments"]}"
         puts "______________________________________________________________"
@@ -82,9 +83,9 @@ module Redditsherpa
     end
 
     def print_subcomments_recursively(comment, depth=0)
-      puts "\t"*depth + "Level #{depth}: #{comment["data"]["body"]} -- by #{comment["data"]["author"]}"
+      puts "\t"*depth + Rainbow("Level #{depth}: ").bright + "#{comment["data"]["body"]} -- by #{comment["data"]["author"]}\n\n"
       if comment["data"]["replies"] == "" or !comment["data"].has_key?("replies")
-        puts "--END THREAD--"
+        puts "-------------------------END THREAD-------------------------\n"
       else
         sub_comments = comment["data"]["replies"]["data"]["children"]
         sub_comments.each do |comment|
