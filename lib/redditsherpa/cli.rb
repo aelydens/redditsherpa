@@ -27,7 +27,13 @@ module Redditsherpa
     def search(topic)
       response = client.search(topic)
       result = response[:data][:children]
-      puts result
+      result.each_with_index do |hash, i|
+        unless i == 0
+        puts hash[:data][:title]
+        puts hash[:data][:description]
+        puts "_____________________________________________"
+      end
+      end
     end
 
     desc "read SUBREDDIT", "Get the top posts from a given subreddit"
@@ -95,7 +101,7 @@ module Redditsherpa
   end
 end
 
-while true do
-  # app code goes in here
-  # System.exit
-end
+# while true do
+#   # app code goes in here
+#   # System.exit
+# end
