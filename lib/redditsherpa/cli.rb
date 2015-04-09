@@ -7,19 +7,21 @@ module Redditsherpa
   class CLI < Thor
     include Launchy
 
-    # loop do
-    #   input = gets.chomp
-    #
-    #   if input == 'comments'
-    #     search(input)
-    #   elsif input == '--exit'
-    #     System.exit
-    #   end
-    #   # code here that handles that user input, calling the methods you've defined
-    #
-    #   prompt_for_input
-    #   # re-prompt giving them options for what to do next
-    # end
+    loop do
+      input = gets.chomp
+
+      if input == 'comments'
+        search(input)
+      elsif input == '--exit'
+        System.exit
+      end
+      # code here that handles that user input, calling the methods you've defined
+
+      prompt_for_input
+      # re-prompt giving them options for what to do next
+    end
+
+    def prompt_for_input
 
     desc "search TOPIC", "Search for content on reddit by passing in a topic"
     def search(topic)
