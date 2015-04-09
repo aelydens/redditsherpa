@@ -23,11 +23,12 @@ module Redditsherpa
     #   # re-prompt giving them options for what to do next
     # end
 
-    # desc "search", "Search for content on reddit by passing in a topic"
-    # def search(topic)
-    #   response = client.search(topic)
-    #   binding.pry
-    # end
+    desc "search TOPIC", "Search for content on reddit by passing in a topic"
+    def search(topic)
+      response = client.search(topic)
+      result = response[:data][:children]
+      puts result
+    end
 
     desc "read SUBREDDIT", "Get the top posts from a given subreddit"
     def read(subreddit)
